@@ -1,13 +1,18 @@
 package com.print.ecommercebackend.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import com.print.ecommercebackend.dto.CreateProductRequest;
 import com.print.ecommercebackend.entity.Product;
 import com.print.ecommercebackend.service.ProductService;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 public class ProductController {
@@ -23,8 +28,33 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/products/{id}")
+    public Product getProductById(@PathVariable Long id) {
+        return productService.getProductById(id);
+    }
+
+
     @PostMapping("/products")
-    public Product createProduct(@RequestBody Product product){
+    public Product createProduct(@RequestBody CreateProductRequest request) {
+
+        Product product = new Product();
+
+        product.setName(request.getName());
+        product.setPrice(request.getPrice());
+
         return productService.saveProduct(product);
+    }
+
+    @PutMapping("/products/{id}")
+    public Product updateProduct(
+            @PathVariable Long id,
+            @RequestBody CreateProductRequest request) {
+
+        return productService.updateProduct(id, request);
+    }
+
+    @DeleteMapping("/products/{id}")
+    public void deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
     }
 }

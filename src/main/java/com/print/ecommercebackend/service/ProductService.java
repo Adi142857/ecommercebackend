@@ -1,5 +1,6 @@
 package com.print.ecommercebackend.service;
 
+import com.print.ecommercebackend.dto.CreateProductRequest;
 import com.print.ecommercebackend.entity.Product;
 import com.print.ecommercebackend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,28 @@ public class ProductService {
 
     public Product saveProduct(Product product) {
         return productRepository.save(product);
+    }
+
+    public Product getProductById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
+    public Product updateProduct(Long id, CreateProductRequest request) {
+
+        Product product = productRepository.findById(id)
+                .orElse(null);
+
+        if (product == null) {
+            return null;
+        }
+
+        product.setName(request.getName());
+        product.setPrice(request.getPrice());
+
+        return productRepository.save(product);
+    }
+
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 }
