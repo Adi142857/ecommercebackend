@@ -2,6 +2,7 @@ package com.print.ecommercebackend.service;
 
 import com.print.ecommercebackend.dto.CreateProductRequest;
 import com.print.ecommercebackend.entity.Product;
+import com.print.ecommercebackend.exception.ProductNotFoundException;
 import com.print.ecommercebackend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,17 +26,16 @@ public class ProductService {
     }
 
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+        return productRepository.findById(id)
+       .orElseThrow(() ->
+            new ProductNotFoundException("Product not found"));
     }
 
     public Product updateProduct(Long id, CreateProductRequest request) {
 
         Product product = productRepository.findById(id)
-                .orElse(null);
-
-        if (product == null) {
-            return null;
-        }
+       .orElseThrow(() ->
+            new ProductNotFoundException("Product not found"));
 
         product.setName(request.getName());
         product.setPrice(request.getPrice());

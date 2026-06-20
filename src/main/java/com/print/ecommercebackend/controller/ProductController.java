@@ -10,6 +10,8 @@ import com.print.ecommercebackend.dto.CreateProductRequest;
 import com.print.ecommercebackend.entity.Product;
 import com.print.ecommercebackend.service.ProductService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -35,7 +37,7 @@ public class ProductController {
 
 
     @PostMapping("/products")
-    public Product createProduct(@RequestBody CreateProductRequest request) {
+    public Product createProduct(@Valid @RequestBody CreateProductRequest request) {
 
         Product product = new Product();
 
