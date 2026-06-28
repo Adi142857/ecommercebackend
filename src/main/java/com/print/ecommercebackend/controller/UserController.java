@@ -1,5 +1,6 @@
 package com.print.ecommercebackend.controller;
 
+import com.print.ecommercebackend.dto.LoginRequest;
 import com.print.ecommercebackend.dto.RegisterRequest;
 import com.print.ecommercebackend.entity.User;
 import com.print.ecommercebackend.service.UserService;
@@ -24,5 +25,10 @@ public class UserController {
         user.setPassword(request.getPassword());
 
         return userService.register(user);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        return userService.login(request);
     }
 }
