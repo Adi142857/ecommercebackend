@@ -1,7 +1,10 @@
 package com.print.ecommercebackend.security;
 
 import java.io.IOException;
+import java.util.Collections;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -30,18 +33,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        // No token — skip JWT processing
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Only attempt authentication if not already set
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.substring(7);
 
-        System.out.println("JWT Token: " + token);
+        try {
+            String email = jwtService.extractEmail(token);
 
-        String email = jwtService.extractEmail(token);
+            if (email != null && jwtService.isTokenValid(token, email)) {
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                email,
+                                null,
+                                Collections.emptyList()
+                        );
 
-        System.out.println("Email from Token: " + email);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            // Invalid / expired / malformed token — do not authenticate, just continue
+            logger.warn("JWT authentication failed: " + e.getMessage());
+        }
 
         filterChain.doFilter(request, response);
     }

@@ -3,6 +3,7 @@ package com.print.ecommercebackend.service;
 import com.print.ecommercebackend.dto.LoginRequest;
 import com.print.ecommercebackend.entity.User;
 import com.print.ecommercebackend.exception.EmailAlreadyExistsException;
+import com.print.ecommercebackend.exception.InvalidCredentialsException;
 import com.print.ecommercebackend.repository.UserRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,11 +40,11 @@ private final JwtService jwtService;
         User user = userRepository.findByEmail(request.getEmail());
 
         if (user == null) {
-            return "User not found";
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return "Invalid password";
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         return jwtService.generateToken(user.getEmail());
